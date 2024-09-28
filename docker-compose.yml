@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: e-recipe
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: 'nest start --watch'
+    volumes:
+      - .:/app
+    ports:
+      - '3333:3333' 
+    environment:
+      DB_HOST: database
+    
+  database:
+    container_name: e-recipe-db
+    image: postgres:15
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - '5433:5432'
+
+volumes:
+  dbdata:
