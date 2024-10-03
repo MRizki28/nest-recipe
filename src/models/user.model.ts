@@ -1,9 +1,11 @@
+import { Injectable } from "@nestjs/common";
 import { Column, CreatedAt, DataType, Model, Table, UpdatedAt } from "sequelize-typescript";
 
 @Table({
     tableName: 'users',
 })
-
+    
+@Injectable()
 export class UserModel extends Model<UserModel> {
     @Column({
         type: DataType.UUID,
