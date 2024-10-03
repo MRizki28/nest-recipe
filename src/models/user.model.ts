@@ -38,6 +38,12 @@ export class UserModel extends Model<UserModel> {
     })
     img_profile: string;
 
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+    })
+    access_token: string;
+
     @CreatedAt
     created_at: Date;
 
