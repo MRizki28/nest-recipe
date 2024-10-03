@@ -20,7 +20,7 @@ export class UniqueEmail implements ValidatorConstraintInterface {
     async validate(value: string): Promise<boolean> {
         const client = await this.pool.connect();
         try {
-            const result = await client.query('SELECT * FROM users WHERE email = $1', [value]);
+            const result = await client.query('SELECT email FROM users WHERE email = $1', [value]);
             return result.rowCount === 0;
         } catch (error) {
             console.error('Error checking email uniqueness:', error);
