@@ -17,7 +17,7 @@ module.exports = {
         email: {
           type: Sequelize.STRING,
           allowNull: false,
-          unique: true,
+          unique: false,
         },
         password: {
           type: Sequelize.STRING,
@@ -25,15 +25,19 @@ module.exports = {
         },
         img_profile: {
           type: Sequelize.STRING,
+          allowNull: false,
+        },
+        access_token: {
+          type: Sequelize.STRING,
           allowNull: true,
         },
         created_at: {
           type: Sequelize.DATE,
-          allowNull: false,
+          allowNull: true,
         },
         updated_at: {
           type: Sequelize.DATE,
-          allowNull: false,
+          allowNull: true,
         }
     })
   },
