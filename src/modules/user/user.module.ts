@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { JwtStrategy } from 'src/config/jwt/jwt.strategy';
+import { UniqueEmail } from 'src/config/validator/UniqueEmail';
 import { UserController } from 'src/controllers/user/user.controller';
 import { UserModel } from 'src/models/user.model';
 import { UserService } from 'src/service/user/user.service';
@@ -16,7 +17,7 @@ import { UserService } from 'src/service/user/user.service';
         signOptions: { expiresIn: '1d' }
     })
     ],
-    providers: [UserService, JwtStrategy],
+    providers: [UserService, JwtStrategy, UniqueEmail],
     controllers: [UserController],
 })
 export class UserModule { }
