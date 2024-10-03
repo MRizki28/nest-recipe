@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/config/jwt/jwtAuth.guard';
 import { UserDto } from 'src/dto/user/user.dto';
 import { UserService } from 'src/service/user/user.service';
 
@@ -8,6 +9,7 @@ export class UserController {
         private readonly userService: UserService
     ) { }
 
+    // @UseGuards(JwtAuthGuard)
     @Get('/')
     async getAllData(): Promise<any> {
         return await this.userService.getAllData();
