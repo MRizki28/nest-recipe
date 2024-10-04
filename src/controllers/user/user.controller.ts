@@ -1,4 +1,6 @@
-import { Body, Controller, Get, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, UnprocessableEntityException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { File } from 'buffer';
 import { JwtAuthGuard } from 'src/config/jwt/jwtAuth.guard';
 import { UserDto } from 'src/dto/user/user.dto';
 import { UserService } from 'src/service/user/user.service';
@@ -16,7 +18,19 @@ export class UserController {
     }
 
     @Post('/create')
-    async createData(@Body() userDto: UserDto): Promise<any> {
-        return await this.userService.createData(userDto);
+    @UseInterceptors(FileInterceptor('img_profile'))
+    async createData(@UploadedFile() img_profile, @Body() userDto: UserDto): Promise<any> {
+        if(!img_profile) {
+            throw new UnprocessableEntityException({
+                status: 'not validate',
+                message: [
+                    {
+                        field: 'img_profile',
+                        error: 'Image Profile is required',
+                    },
+                ],
+            });
+        }
+        return await this.userService.createData(userDto, img_profile);
     }
 }
