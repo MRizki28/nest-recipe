@@ -61,4 +61,20 @@ export class UserService {
         };
     }
 
+    async getDataById(id: string): Promise<any> {
+        const data = await this.userModel.findOne({
+            where: {
+                id
+            }
+        });
+
+        if (data) {
+            return data;
+        }
+
+        return {
+            message: 'Data not found'
+        }
+    }
+
 }
