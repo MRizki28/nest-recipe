@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UnprocessableEntityException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UnprocessableEntityException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { File } from 'buffer';
 import { JwtAuthGuard } from 'src/config/jwt/jwtAuth.guard';
@@ -32,5 +32,10 @@ export class UserController {
             });
         }
         return await this.userService.createData(userDto, img_profile);
+    }
+
+    @Get('get/:id')
+    async getDataById(@Param('id') id: string): Promise<any> {
+        return await this.userService.getDataById(id);
     }
 }
