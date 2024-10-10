@@ -1,8 +1,11 @@
-import { Body, Controller, Get, Param, Post, UnprocessableEntityException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UnprocessableEntityException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { File } from 'buffer';
 import { JwtAuthGuard } from 'src/config/jwt/jwtAuth.guard';
+import { AddParamIdToDtoInterceptor } from 'src/config/params';
+import { AddUserIdPipe } from 'src/config/pip/custompipe';
 import { UserDto } from 'src/dto/user/user.dto';
+import { UserUpdateDto } from 'src/dto/user/user.update.dto';
 import { UserService } from 'src/service/user/user.service';
 
 @Controller('user')
@@ -38,4 +41,15 @@ export class UserController {
     async getDataById(@Param('id') id: string): Promise<any> {
         return await this.userService.getDataById(id);
     }
+
+    @Put('update/:id')
+    @UseInterceptors(FileInterceptor('img_profile'), AddParamIdToDtoInterceptor)
+    async updateUser(
+        @Param('id') id: string,
+        @Body(new AddUserIdPipe()) updateUserDto: UserUpdateDto,
+        @UploadedFile() img_profile
+    ) {
+        return this.userService.updateData(id, updateUserDto, img_profile);
+    }
+    
 }
