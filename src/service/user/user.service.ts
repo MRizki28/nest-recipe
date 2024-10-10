@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/sequelize';
 import { createWriteStream } from 'fs';
 import { UserDto } from 'src/dto/user/user.dto';
+import { UserUpdateDto } from 'src/dto/user/user.update.dto';
 import { UserModel } from 'src/models/user.model';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -75,6 +76,56 @@ export class UserService {
         return {
             message: 'Data not found'
         }
+    }
+
+    async updateData(id, userUpdateDto: UserUpdateDto, img_profile: Express.Multer.File): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const { name, email, password } = userUpdateDto;
+                const user = await this.userModel.findOne({
+                    where: {
+                        id
+                    }
+                });
+
+                console.log(user)
+
+                if (user) {
+                    user.id = id;
+                    user.name = name;
+                    user.email = email;
+                    user.password = password;
+
+                    if (img_profile) {
+                        const filename = `${uuidv4()}-${img_profile.originalname}`;
+                        const path = `./public/uploads/${filename}`;
+                        const writeStream = createWriteStream(path);
+
+                        const fileUploadPromise = new Promise((resolve, reject) => {
+                            writeStream.on('finish', () => resolve(true));
+                            writeStream.on('error', (err) => reject(err));
+                            writeStream.write(img_profile.buffer);
+                            writeStream.end();
+                        });
+
+                        await fileUploadPromise;
+                        user.img_profile = filename;
+                    }
+
+                    await user.save();
+                    resolve({
+                        message: 'Data updated successfully',
+                        data: user
+                    });
+                } else {
+                    reject({
+                        message: 'Data not found'
+                    });
+                }
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
 }
