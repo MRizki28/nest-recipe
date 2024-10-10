@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
+import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
 import { Pool } from "pg";
 
 @ValidatorConstraint({ async: true })
@@ -17,11 +17,18 @@ export class UniqueEmail implements ValidatorConstraintInterface {
         });
     }
 
-    async validate(value: string): Promise<boolean> {
+    async validate(value: string, args: ValidationArguments): Promise<boolean> {
+        console.log('args', args);
         const client = await this.pool.connect();
+        const id = args.object['id'];
         try {
-            const result = await client.query('SELECT email FROM users WHERE email = $1', [value]);
-            return result.rowCount === 0;
+            if(id) {
+                const result = await client.query('SELECT email FROM users WHERE email = $1 AND id != $2', [value, id]);
+                return result.rowCount === 0;
+            }else{
+                const result = await client.query('SELECT email FROM users WHERE email = $1', [value]);
+                return result.rowCount === 0;
+            }
         } catch (error) {
             console.error('Error checking email uniqueness:', error);
             return false;
@@ -30,7 +37,15 @@ export class UniqueEmail implements ValidatorConstraintInterface {
         }
     }
 
-    defaultMessage(): string {
-        return 'Email $value already exists, please use another email';
+    defaultMessage(args: ValidationArguments): string {
+        const id = args.object['id']
+        const paramsId = args.value
+
+        if(id != paramsId){
+            return 'Pastikan id sama dengan id yang di update'
+        }else{
+            return 'Email $value already exists, please use another email';
+        }
+        
     }
 }
