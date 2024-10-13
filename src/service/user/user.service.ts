@@ -128,4 +128,28 @@ export class UserService {
         });
     }
 
+    async deleteData(id: string): Promise<any>{
+        try {
+            const user = await this.userModel.findOne({
+                where: {
+                    id
+                }
+            });
+
+            if(user){
+                await user.destroy();
+                return {
+                    message: 'Data deleted successfully'
+                }
+            }
+
+            return {
+                message: 'Data not found'
+            }
+        } catch (error) {
+            console.log(error);
+        };
+        
+    }
+
 }
