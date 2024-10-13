@@ -6,6 +6,7 @@ import { UserDto } from 'src/dto/user/user.dto';
 import { UserUpdateDto } from 'src/dto/user/user.update.dto';
 import { UserModel } from 'src/models/user.model';
 import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'fs';
 
 @Injectable()
 export class UserService {
@@ -100,6 +101,11 @@ export class UserService {
                         const filename = `${uuidv4()}-${img_profile.originalname}`;
                         const path = `./public/uploads/${filename}`;
                         const writeStream = createWriteStream(path);
+                        const oldPath = `./public/uploads/${user.img_profile}`;
+
+                        if(await fs.existsSync(oldPath)){
+                            await fs.unlinkSync(oldPath);
+                        }
 
                         const fileUploadPromise = new Promise((resolve, reject) => {
                             writeStream.on('finish', () => resolve(true));
