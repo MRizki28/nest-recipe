@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, UnprocessableEntityException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UnprocessableEntityException, UploadedFile, UseGuards, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { File } from 'buffer';
 import { JwtAuthGuard } from 'src/config/jwt/jwtAuth.guard';
@@ -50,6 +50,11 @@ export class UserController {
         @UploadedFile() img_profile
     ) {
         return this.userService.updateData(id, updateUserDto, img_profile);
+    }
+
+    @Delete('delete/:id')
+    async deleteData(@Param('id') id: string): Promise<any> {
+        return await this.userService.deleteData(id);
     }
     
 }
