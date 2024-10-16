@@ -4,6 +4,7 @@ import { AppService } from '../service/app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UserModel } from 'src/models/user.model';
 import { UserModule } from './user/user.module';
+import { RecipeModule } from './recipe/recipe.module';
 require('dotenv').config();
 
 @Module({
@@ -19,6 +20,7 @@ require('dotenv').config();
       synchronize: true,
     }),
     UserModule,
+    RecipeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
