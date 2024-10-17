@@ -41,13 +41,13 @@ export class RecipeModel extends Model<RecipeModel> {
         type: DataType.ENUM('breakfast', 'dinner'),
         allowNull: false,
     })
-    category: 'breakfast' | 'dinner'
+    category: string
 
     @Column({
         type: DataType.ENUM('easy', 'medium', 'hard'),
         allowNull: false,
     })
-    difficulty: 'easy' | 'medium' | 'hard'
+    difficulty: string
 
     @Column({
         type: DataType.INTEGER,
