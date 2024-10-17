@@ -32,7 +32,7 @@ module.exports = {
         type: Sequelize.ENUM('breakfast', 'dinner'),
         allowNull: false,
       },
-      dificulty: {
+      difficulty: {
         type: Sequelize.ENUM('easy', 'medium', 'hard'),
         allowNull: false,
       },
