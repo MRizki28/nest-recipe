@@ -84,4 +84,104 @@ export class RecipeService {
             throw new InternalServerErrorException('An error occurred while creating the recipe');
         }
     }
+
+    async getDataById(id: string): Promise<any> {
+        const data = await this.recipeModel.findOne({ where: { id } });
+        if (!data) {
+            throw new NotFoundException({
+                status: 'not found',
+                message: 'Data not found',
+            });
+        }
+
+        return {
+            status: 'success',
+            data,
+        };
+    }
+
+    async updateData(id: string, recipeDto: RecipeDto, img_recipe: Express.Multer.File): Promise<any> {
+        try {
+            const { name_recipe, description, category, difficulty, prep_time, cook_time, serving } = recipeDto;
+            const recipe = await this.recipeModel.findOne({ where: { id } });
+            if (!recipe) {
+                throw new NotFoundException({
+                    status: 'not found',
+                    message: 'Data not found',
+                });
+            }
+
+            recipe.name_recipe = name_recipe;
+            recipe.description = description;
+            recipe.category = category;
+            recipe.difficulty = difficulty;
+            recipe.prep_time = prep_time;
+            recipe.cook_time = cook_time;
+            recipe.serving = serving;
+
+            if (img_recipe) {
+                const filename = `${uuidv4()}-${img_recipe.originalname}`;
+                const path = `./public/uploads/recipe/${filename}`;
+                const writeStream = createWriteStream(path);
+                const oldFile = `./public/uploads/recipe/${recipe.img_recipe}`;
+                if (fs.existsSync(oldFile)) {
+                    fs.unlinkSync(oldFile);
+                }
+
+                const fileUploadPromise = new Promise((resolve, reject) => {
+                    writeStream.on('finish', () => resolve(true));
+                    writeStream.on('error', (err) => reject(err));
+                    writeStream.write(img_recipe.buffer);
+                    writeStream.end();
+                });
+
+                await fileUploadPromise;
+                recipe.img_recipe = filename;
+            }
+
+            await recipe.save();
+            return {
+                message: 'Data updated successfully',
+                data: recipe
+            };
+        } catch (error) {
+            console.log(error);
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+        };
+
+    }
+
+    async deleteData(id: string): Promise<any> {
+        try {
+            const recipe = await this.recipeModel.findOne({ where: { id } });
+            if (!recipe) {
+                throw new NotFoundException({
+                    status: 'not found',
+                    message: 'Data not found',
+                });
+            }
+
+            const path = `./public/uploads/recipe/${recipe.img_recipe}`;
+            if(fs.existsSync){
+                fs.unlinkSync(path);
+            }
+
+            await recipe.destroy();
+
+            return {
+                status: 'success',
+                message: 'Data deleted successfully'
+            };
+        } catch (error) {
+            console.log(error);
+            if(error instanceof NotFoundException){
+                throw error;
+            }
+        };
+
+    }
+
+
 }
